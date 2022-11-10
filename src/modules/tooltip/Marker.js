@@ -108,33 +108,38 @@ export default class Marker {
     let col = j
 
     let points = w.globals.dom.baseEl.querySelectorAll(
-      '.apexcharts-series:not(.apexcharts-series-collapsed) .apexcharts-marker'
+      '.apexcharts-series:not(.apexcharts-series-collapsed) .apexcharts-nullpoint, .apexcharts-series:not(.apexcharts-series-collapsed) .apexcharts-marker'
     )
 
-    let newSize = w.config.markers.hover.size
+    const globalNewSize = w.config.markers.hover.size
 
     for (let p = 0; p < points.length; p++) {
-      let rel = points[p].getAttribute('rel')
-      let index = points[p].getAttribute('index')
+      const point = points[p]
+      let rel = point.getAttribute('rel')
+      let index = point.getAttribute('index')
+      const pointIsNull = point.classList.contains('apexcharts-nullpoint')
 
-      if (newSize === undefined) {
-        newSize =
-          w.globals.markers.size[index] + w.config.markers.hover.sizeOffset
-      }
+      const newSize = pointIsNull
+        ? null
+        : globalNewSize === undefined
+        ? w.globals.markers.size[index] + w.config.markers.hover.sizeOffset
+        : globalNewSize
 
       if (col === parseInt(rel, 10)) {
-        me.newPointSize(col, points[p])
+        if (!pointIsNull) {
+          me.newPointSize(col, point)
+        }
 
-        let cx = points[p].getAttribute('cx')
-        let cy = points[p].getAttribute('cy')
+        let cx = point.getAttribute('cx')
+        let cy = point.getAttribute('cy')
 
         me.tooltipPosition.moveXCrosshairs(cx)
 
         if (!ttCtx.fixedTooltip) {
           me.tooltipPosition.moveTooltip(cx, cy, newSize)
         }
-      } else {
-        me.oldPointSize(points[p])
+      } else if (!pointIsNull) {
+        me.oldPointSize(point)
       }
     }
   }
