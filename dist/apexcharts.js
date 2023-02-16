@@ -11836,33 +11836,23 @@
       key: "yAxisTitleRotate",
       value: function yAxisTitleRotate(realIndex, yAxisOpposite) {
         var w = this.w;
-        var graphics = new Graphics(this.ctx);
-        var yAxisLabelsCoord = {
-          width: 0,
-          height: 0
-        };
-        var yAxisTitleCoord = {
-          width: 0,
-          height: 0
-        };
-        var elYAxisLabelsWrap = w.globals.dom.baseEl.querySelector(" .apexcharts-yaxis[rel='".concat(realIndex, "'] .apexcharts-yaxis-texts-g"));
-
-        if (elYAxisLabelsWrap !== null) {
-          yAxisLabelsCoord = elYAxisLabelsWrap.getBoundingClientRect();
-        }
-
         var yAxisTitle = w.globals.dom.baseEl.querySelector(".apexcharts-yaxis[rel='".concat(realIndex, "'] .apexcharts-yaxis-title text"));
 
         if (yAxisTitle !== null) {
-          yAxisTitleCoord = yAxisTitle.getBoundingClientRect();
-        }
+          var yAxisLabelsCoord = {
+            width: 0,
+            height: 0
+          };
+          var elYAxisLabelsWrap = w.globals.dom.baseEl.querySelector(" .apexcharts-yaxis[rel='".concat(realIndex, "'] .apexcharts-yaxis-texts-g"));
 
-        if (yAxisTitle !== null) {
+          if (elYAxisLabelsWrap !== null) {
+            yAxisLabelsCoord = elYAxisLabelsWrap.getBoundingClientRect();
+          }
+
+          var yAxisTitleCoord = yAxisTitle.getBoundingClientRect();
           var x = this.xPaddingForYAxisTitle(realIndex, yAxisLabelsCoord, yAxisTitleCoord, yAxisOpposite);
           yAxisTitle.setAttribute('x', x.xPos - (yAxisOpposite ? 10 : 0));
-        }
-
-        if (yAxisTitle !== null) {
+          var graphics = new Graphics(this.ctx);
           var titleRotatingCenter = graphics.rotateAroundCenter(yAxisTitle);
           yAxisTitle.setAttribute('transform', "rotate(".concat(yAxisOpposite ? w.config.yaxis[realIndex].title.rotate * -1 : w.config.yaxis[realIndex].title.rotate, " ").concat(titleRotatingCenter.x, " ").concat(titleRotatingCenter.y, ")"));
         }
@@ -16791,28 +16781,30 @@
         var me = this;
         var ttCtx = this.ttCtx;
         var col = j;
-        var points = w.globals.dom.baseEl.querySelectorAll('.apexcharts-series:not(.apexcharts-series-collapsed) .apexcharts-marker');
-        var newSize = w.config.markers.hover.size;
+        var points = w.globals.dom.baseEl.querySelectorAll('.apexcharts-series:not(.apexcharts-series-collapsed) .apexcharts-nullpoint, .apexcharts-series:not(.apexcharts-series-collapsed) .apexcharts-marker');
+        var globalNewSize = w.config.markers.hover.size;
 
         for (var p = 0; p < points.length; p++) {
-          var rel = points[p].getAttribute('rel');
-          var index = points[p].getAttribute('index');
-
-          if (newSize === undefined) {
-            newSize = w.globals.markers.size[index] + w.config.markers.hover.sizeOffset;
-          }
+          var point = points[p];
+          var rel = point.getAttribute('rel');
+          var index = point.getAttribute('index');
+          var pointIsNull = point.classList.contains('apexcharts-nullpoint');
+          var newSize = pointIsNull ? null : globalNewSize === undefined ? w.globals.markers.size[index] + w.config.markers.hover.sizeOffset : globalNewSize;
 
           if (col === parseInt(rel, 10)) {
-            me.newPointSize(col, points[p]);
-            var cx = points[p].getAttribute('cx');
-            var cy = points[p].getAttribute('cy');
+            if (!pointIsNull) {
+              me.newPointSize(col, point);
+            }
+
+            var cx = point.getAttribute('cx');
+            var cy = point.getAttribute('cy');
             me.tooltipPosition.moveXCrosshairs(cx);
 
             if (!ttCtx.fixedTooltip) {
               me.tooltipPosition.moveTooltip(cx, cy, newSize);
             }
-          } else {
-            me.oldPointSize(points[p]);
+          } else if (!pointIsNull) {
+            me.oldPointSize(point);
           }
         }
       }
@@ -17133,13 +17125,7 @@
 
           if (w.globals.comboCharts) {
             i = parseInt(bar.parentNode.getAttribute('data:realIndex'), 10);
-          } // if (w.config.tooltip.shared) {
-          // this check not needed  at the moment
-          //   const yDivisor = w.globals.gridHeight / (w.globals.series.length)
-          //   const hoverY = ttCtx.clientY - ttCtx.seriesBound.top
-          //   j = Math.ceil(hoverY / yDivisor)
-          // }
-
+          }
 
           ttCtx.tooltipLabels.drawSeriesTexts({
             ttItems: opt.ttItems,
@@ -17543,11 +17529,6 @@
         var chartWithmarkers = type === 'area' || type === 'line' || type === 'scatter' || type === 'bubble' || type === 'radar';
         var hoverArea = w.globals.dom.Paper.node;
         var elGrid = this.getElGrid();
-
-        if (elGrid) {
-          this.seriesBound = elGrid.getBoundingClientRect();
-        }
-
         var tooltipY = [];
         var tooltipX = [];
         var seriesHoverParams = {
@@ -28745,25 +28726,25 @@
       inherit: SVG.Shape,
       // Add class methods
       extend: {
-        // (re)load image	
+        // (re)load image
         load: function load(url) {
           if (!url) return this;
           var self = this,
-              img = new window.Image(); // preload image	
+              img = new window.Image(); // preload image
 
           SVG.on(img, 'load', function () {
             SVG.off(img);
             var p = self.parent(SVG.Pattern);
-            if (p === null) return; // ensure image size	
+            if (p === null) return; // ensure image size
 
             if (self.width() == 0 && self.height() == 0) {
               self.size(img.width, img.height);
-            } // ensure pattern size if not set	
+            } // ensure pattern size if not set
 
 
             if (p && p.width() == 0 && p.height() == 0) {
               p.size(self.width(), self.height());
-            } // callback	
+            } // callback
 
 
             if (typeof self._loaded === 'function') {
@@ -28784,7 +28765,7 @@
           });
           return this.attr('href', img.src = this.src = url, SVG.xlink);
         },
-        // Add loaded callback	
+        // Add loaded callback
         loaded: function loaded(_loaded) {
           this._loaded = _loaded;
           return this;
@@ -28796,7 +28777,7 @@
       },
       // Add parent method
       construct: {
-        // create image element, load image and set its size	
+        // create image element, load image and set its size
         image: function image(source, width, height) {
           return this.put(new SVG.Image()).load(source).size(width || 0, height || width || 0);
         }
@@ -29494,10 +29475,10 @@
     } // Create matrix array for looping
 
 
-    var abcdef = 'abcdef'.split(''); // Add CustomEvent to IE9 and IE10	
+    var abcdef = 'abcdef'.split(''); // Add CustomEvent to IE9 and IE10
 
     if (typeof window.CustomEvent !== 'function') {
-      // Code from: https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent	
+      // Code from: https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent
       var CustomEventPoly = function CustomEventPoly(event, options) {
         options = options || {
           bubbles: false,
