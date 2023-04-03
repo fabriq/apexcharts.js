@@ -154,7 +154,7 @@ class DataLabels {
           i,
           j: dataPointIndex,
           parent: elDataLabelsWrap,
-          offsetCorrection: true,
+          offsetCorrection: false,
           dataLabelsConfig: w.config.dataLabels
         })
       }
