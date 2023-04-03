@@ -558,7 +558,7 @@ export default class BarDataLabels {
         parent: elDataLabelsWrap,
         dataLabelsConfig: modifiedDataLabelsConfig,
         alwaysDrawDataLabel: true,
-        offsetCorrection: true
+        offsetCorrection: false
       })
     }
 
