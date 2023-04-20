@@ -1784,7 +1784,7 @@ char-regex@^1.0.2:
   version "1.0.2"
   resolved "https://registry.npmjs.org/char-regex/-/char-regex-1.0.2.tgz"
 
-chokidar@3.5.2, chokidar@^3.3.0:
+chokidar@3.5.2:
   version "3.5.2"
   resolved "https://registry.npmjs.org/chokidar/-/chokidar-3.5.2.tgz"
   dependencies:
@@ -1900,9 +1900,9 @@ commander@^2.12.1, commander@^2.20.0:
   version "2.20.3"
   resolved "https://registry.npmjs.org/commander/-/commander-2.20.3.tgz"
 
-commander@^3.0.2:
-  version "3.0.2"
-  resolved "https://registry.npmjs.org/commander/-/commander-3.0.2.tgz"
+commander@^5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-5.1.0.tgz#46abbd1652f8e059bddaef99bbdcb2ad9cf179ae"
 
 commander@^7.0.0, commander@^7.2.0:
   version "7.2.0"
@@ -3941,14 +3941,13 @@ nth-check@^2.0.0:
   dependencies:
     boolbase "^1.0.0"
 
-nunjucks@3.2.1:
-  version "3.2.1"
-  resolved "https://registry.npmjs.org/nunjucks/-/nunjucks-3.2.1.tgz"
+nunjucks@3.2.4:
+  version "3.2.4"
+  resolved "https://registry.yarnpkg.com/nunjucks/-/nunjucks-3.2.4.tgz#f0878eef528ce7b0aa35d67cc6898635fd74649e"
   dependencies:
     a-sync-waterfall "^1.0.0"
     asap "^2.0.3"
-    chokidar "^3.3.0"
-    commander "^3.0.2"
+    commander "^5.1.0"
 
 nwsapi@^2.2.0:
   version "2.2.0"
